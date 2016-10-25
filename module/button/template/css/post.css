@@ -1,0 +1,53 @@
+.ng-cloak {
+  display: none;
+}
+a {
+  text-decoration: none;
+}
+ul,
+ol {
+  list-style: none;
+  padding: 0px;
+  margin: 0px;
+}
+.app {
+  border: solid 1px #999999;
+  height: 300px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+}
+.app .menu {
+  flex: 1;
+  height: 30px;
+  background: #f3f3f3;
+}
+.app .menu ul {
+  display: flex;
+  justify-content: space-around;
+}
+.app .menu ul li {
+  position: relative;
+  text-align: center;
+}
+.app .menu ul li .child-menu {
+  text-align: left;
+  position: absolute;
+  width: 100px;
+  border: solid 1px #ddd;
+  display: flex;
+  flex-direction: column;
+  bottom: 20px;
+}
+.edit {
+  position: relative;
+}
+.edit .delIcon {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  cursor: pointer;
+}
+.edit .childMenu {
+  position: relative;
+}

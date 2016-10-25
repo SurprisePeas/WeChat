@@ -1,0 +1,52 @@
+<extend file='../master'/>
+<link rel="stylesheet" href="{{__TEMPLATE__}}/css/lists.css">
+<block name="content">
+    <center><h2>图片素材管理</h2></center>
+    <div class="bg">
+        <button class="btn btn-success" onclick="upImg()">选择图片</button>
+    </div>
+    <br/>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <center>
+                <h3 class="panel-title">图 片 列 表</h3>
+            </center>
+        </div>
+
+        <div class="panel-body">
+            <ul id="matter">
+                <foreach from="$data" value="$v">
+                    <li>
+                        <img src="{{$v['path']}}" width="100">
+                        <a href="{{site_url('site/del','',['media_id'=>$v['media_id']])}}" class="btn btn-danger">删除</a>
+                    </li>
+                </foreach>
+            </ul>
+        </div>
+    </div>
+</block>
+
+<script>
+    // 上传图片
+    function upImg(obj) {
+        require(['util'], function (util) {
+            util.image(function (images) {  //图片上传插件
+
+                obj = util.loading();   //加载动画插件
+
+                $.post('{{site_url("site/pushImg")}}', {file: images[0]}, function (r) {
+
+                    obj.modal('hide');  //上传完成,隐藏加载动画
+
+                    if (r.valid == 1) {
+                        util.message('上传成功', 'refresh', 'success');
+                    } else {
+                        util.message('失败了!!!!', 'refresh', 'error');
+                    }
+                })
+            }, []);
+        });
+    }
+
+
+</script>

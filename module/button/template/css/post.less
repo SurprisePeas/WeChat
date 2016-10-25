@@ -1,0 +1,49 @@
+.ng-cloak {
+  display : none;
+}
+
+a { text-decoration : none; }
+
+ul, ol { list-style : none; padding : 0px; margin : 0px; }
+
+.app {
+  border          : solid 1px #999999;
+  height          : 300px;
+  display         : flex;
+  align-items     : flex-end;
+  justify-content : space-around;
+  .menu {
+    flex       : 1;
+    height     : 30px;
+    background : #f3f3f3;
+    ul {
+      display         : flex;
+      justify-content : space-around;
+      li {
+        position: relative;
+        text-align: center;
+        .child-menu {
+          text-align: left;
+          position: absolute;
+          width:100px;
+          border:solid 1px #ddd;
+          display: flex;
+          flex-direction: column;
+          bottom: 20px;
+        }
+      }
+    }
+  }
+}
+.edit{
+  position: relative;
+  .delIcon{
+    position: absolute;
+    right:10px;
+    top:10px;
+    cursor: pointer;
+  }
+  .childMenu{
+    position: relative;
+  }
+}

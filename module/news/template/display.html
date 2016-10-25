@@ -1,0 +1,157 @@
+<link rel="stylesheet" href="{{__TEMPLATE__}}/css/style.css">
+<!--因为此模板是要被继承的,所以不需要再加form表单-->
+<div class="container-fluid">
+    <div class="row">
+        <!--左侧-->
+        <div class="col-xs-4 view">
+            <!--大的显示行-->
+            <div class="big" ng-repeat="(k,v) in data" ng-if="$first" ng-click="changeAct(k)">
+                <img ng-src="@{{v.PicUrl}}">
+                <div class="text" ng-bind="v.Title"></div>
+            </div>
+            <!--小的显示行-->
+            <div class="small ng-cloak" ng-repeat="(k,v) in data" ng-if="!$first" ng-click="changeAct(k)" ng-cloak="">
+                <div class="text" ng-bind="v.Title"></div>
+                <div class="img">
+                    <img ng-src="@{{v.PicUrl}}">
+                </div>
+            </div>
+            <br>
+            <!--添加-->
+            <button ng-click="add()" type="button" class="btn btn-info btn_diy">再添加一行信息</button>
+        </div>
+        <!--右侧-->
+        <div class="col-xs-8">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">标题</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" ng-model="active.Title">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">摘要</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" rows="3" ng-model="active.Description"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">图片</label>
+                        <div class="col-sm-10">
+                            <div class="input-group">
+                                <input type="text" class="form-control" readonly="" ng-model="active.PicUrl">
+                                <div class="input-group-btn">
+                                    <button ng-click="upImage()" class="btn btn-default" type="button">选择图片</button>
+                                </div>
+                            </div>
+                            <div class="input-group" style="margin-top:5px;">
+                                <img ng-src="@{{active.PicUrl}}" class="img-responsive img-thumbnail" width="150">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">类型</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline">
+                                <input type="radio" ng-model="active.type" value="link"> 链接
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" ng-model="active.type" value="con" ng-cloak="" class="ng-cloak"> 内容
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="active.type=='con'">
+                        <label for="" class="col-sm-2 control-label">内容</label>
+                        <div class="col-sm-10">
+                            <textarea ng-model="active.content" id="container" style="height:300px;width:100%;"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group"  ng-show="active.type=='link'">
+                        <label for="" class="col-sm-2 control-label">链接</label>
+                        <div class="col-sm-10">
+                            <input type="text" ng-model="active.Url" class="form-control" id="" placeholder="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" name="data">
+<br>
+<script>
+    /**
+     * 因为此模板是共用的admin->message->post模板
+     * 直接使用post模板里的angular代码定义的go函数就可以使用angular
+     */
+    function go($scope,_) {
+        //默认模板信息
+        $scope.data = [
+            {
+                Title: '',
+                Description: '',
+                PicUrl: '',
+                Url: '',
+                content:'',
+                type:'con',
+            }
+        ];
+
+        //新添加信息方法
+        $scope.add = function () {
+            if ($scope.data.length>=5){
+                return false;
+            }
+            var newData = {
+                Title: '',
+                Description: '',
+                PicUrl: '',
+                Url: 'http://',
+                content:'',
+                type:'con'
+            }
+            $scope.data.push(newData);
+        }
+
+        //点击编辑当前内容
+        $scope.active = $scope.data[0];//默认显示第一个
+        $scope.changeAct = function (k) {
+            $scope.active = $scope.data[k];
+        }
+
+        //上传图片
+        $scope.upImage=function(){
+            util.image(function (images) {
+                $scope.active.PicUrl = images[0];
+                $scope.$apply();
+            }, [])
+        }
+
+        //百度图文编辑器
+        util.ueditor('container', {}, function (editor) {
+            editor.addListener('contentChange', function () {
+                $scope.active.content = editor.getContent();
+            });
+            editor.addListener('ready', function () {
+                if (editor && editor.getContent() != $scope.active.content) {
+                    editor.setContent($scope.active.content);
+                }
+                $scope.$watch('active', function (item) {
+                    if (editor && editor.getContent() != item.content) {
+                        editor.setContent(item.content ? item.content : '');
+                    }
+                },true);
+            });
+            editor.addListener('clearRange', function () {
+                $scope.active.content = editor.getContent();
+                $scope.$apply();
+            });
+        });
+
+        //提交表单 将data数组数据转为Json进行POST提交
+        $("form").submit(function () {
+            $("[name='data']").val(angular.toJson($scope.data));
+        })
+    }
+</script>

@@ -1,0 +1,46 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        回复内容
+        <!--点击 追加一个回复内容内容框-->
+        <button type="button" ng-click="add()" class="btn btn-default btn-xs">添加回复</button>
+    </div>
+    <div class="panel-body">
+
+        <!--将所有的contents循环出来-->
+        <div class="form-group" ng-repeat="(k,v) in contents">
+            <i class="fa fa-close delIcon" ng-click="delText(k,v)"></i>
+            <label class="col-sm-2 control-label">内容</label>
+            <div class="col-sm-10">
+                <textarea ng-model="v.content" class="form-control" rows="3"></textarea>
+            </div>
+        </div>
+
+        <input type="text" name="content" hidden="hidden">
+    </div>
+</div>
+
+<script>
+    function go($scope,_) {
+        //回复内容框
+        $scope.contents =  [{"contents":" "}];
+
+        //执行add添加事件,添加一个新的内容框
+        $scope.add = function () {
+            if($scope.contents.length>=5){
+                alert('最多只能添加五条信息');
+                return false;
+            }
+            $scope.contents.push({"contents":" "});
+        }
+
+        //删除内容框
+        $scope.delText = function (item) {
+            $scope.contents = _.without($scope.contents.item);
+        }
+    }
+
+    //提交的时候执行replySub方法 抓取到页面里的隐藏域  content  将数组转为JSON对象存入数据组
+    function replySub($scope){
+        $("[name='content']").val(angular.toJson($scope.contents));
+    }
+</script>

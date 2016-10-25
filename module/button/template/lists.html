@@ -1,0 +1,37 @@
+<extend file='../master'/>
+<block name="content">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#tab1">菜单列表</a></li>
+        <li><a href="{{site_url('site/post')}}" role="tab">添加菜单</a></li>
+    </ul>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>编号</th>
+            <th>名称</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach from="$data" value="$v">
+            <tr>
+                <td>{{$v['id']}}</td>
+                <td>{{$v['name']}}</td>
+                <td>
+                    <if value="$v['status']==1">
+                        <span class="label label-success">启用</span>
+                        <else/>
+                        <span class="label label-default">未使用</span>
+                    </if>
+                </td>
+                <td>
+                    <a href="{{site_url('site/del','',['id'=>$v['id']])}}">删除</a>
+                    <a href="{{site_url('site/post','',['id'=>$v['id']])}}">编辑</a>
+                    <a href="{{site_url('site/push','',['id'=>$v['id']])}}">推送</a>
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+</block>

@@ -1,0 +1,198 @@
+<extend file='../master'/>
+<link rel="stylesheet" href="{{__TEMPLATE__}}/css/post.css">
+<block name="content">
+    <ul class="nav nav-tabs">
+        <li><a href="{{site_url('site/lists')}}">菜单列表</a></li>
+        <li class="active"><a href="{{site_url('site/post')}}" role="tab">添加菜单</a></li>
+    </ul>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <form action="" method="post" id="form" ng-controller="ctrl" ng-cloak="" class="ng-cloak form-horizontal">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <div class="form-group">
+                                <label for="" class="col-sm-2 control-label">菜单名称</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="name" value="{{$field['name']}}">
+                                    <input type="hidden" class="form-control" name="id" value="{{$field['id']}}">
+                                </div>
+                            </div>
+
+                            <div class="edit panel panel-default" ng-repeat="(k,v) in menus.button">
+                                <div class="panel-body">
+                                    <i class="fa fa-close delIcon" ng-click="delTopMenu(v)"></i>
+                                    <div class="panel panel-default">
+                                        <div class="panel-body">
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">标题</label>
+                                                <div class="col-sm-10">
+                                                    <input type="text" class="form-control" ng-model="v.name">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">类型</label>
+                                                <div class="col-sm-10">
+                                                    <label class="radio-inline">
+                                                        <input type="radio" ng-model="v.type" value="view"> 链接
+                                                    </label>
+                                                    <label class="radio-inline">
+                                                        <input type="radio" ng-model="v.type" value="click"> 关键词
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group" ng-if="v.type=='view'">
+                                                <label class="col-sm-2 control-label">链接</label>
+                                                <div class="col-sm-10">
+                                                    <input type="text" class="form-control" ng-model="v.url">
+                                                </div>
+                                            </div>
+                                            <div class="form-group" ng-if="v.type=='click'">
+                                                <label class="col-sm-2 control-label">关键词</label>
+                                                <div class="col-sm-10">
+                                                    <input type="text" class="form-control" ng-model="v.key">
+                                                </div>
+                                            </div>
+                                            <div class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    子菜单
+                                                </div>
+                                                <div class="panel-body childMenu" ng-repeat="m in v.sub_button">
+                                                    <i class="fa fa-close delIcon" ng-click="delChildMenu(k,m)"></i>
+                                                    <div class="panel panel-default">
+                                                        <div class="panel-body">
+                                                            <div class="form-group">
+                                                                <label class="col-sm-2 control-label">标题</label>
+                                                                <div class="col-sm-10">
+                                                                    <input type="text" class="form-control" ng-model="m.name">
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="col-sm-2 control-label">类型</label>
+                                                                <div class="col-sm-10">
+                                                                    <label class="radio-inline">
+                                                                        <input type="radio" ng-model="m.type" value="view"> 链接
+                                                                    </label>
+                                                                    <label class="radio-inline">
+                                                                        <input type="radio" ng-model="m.type" value="click"> 关键词
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group" ng-if="m.type=='view'">
+                                                                <label class="col-sm-2 control-label">链接</label>
+                                                                <div class="col-sm-10">
+                                                                    <input type="text" class="form-control" ng-model="m.url">
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group" ng-if="m.type=='click'">
+                                                                <label class="col-sm-2 control-label">关键词</label>
+                                                                <div class="col-sm-10">
+                                                                    <input type="text" class="form-control" ng-model="m.key">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button type="button" class="btn btn-default btn-xs" ng-click="addChildMenu(k)">添加子菜单</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-success" ng-click="addTopMenu()">添加一级菜单</button>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="app">
+                                <div class="menu">
+                                    <ul>
+                                        <li ng-repeat="v in menus.button">
+                                            @{{v.name}}
+                                            <div class="child-menu" ng-if="v.sub_button.length">
+                                                <a href="" ng-repeat="m in v.sub_button" ng-bind="m.name"></a>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <textarea name="data" hidden="hidden"></textarea>
+                <button class="btn btn-primary">保存</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        require(['angular','underscore'], function (angular,_) {
+            var md = angular.module('id',[]);
+            md.controller('ctrl',['$scope',function ($scope) {
+                //判断是 添加还是修改
+                var action = "<?php echo isset($field)?'edit':'add'; ?>";
+                if(action=='add'){
+                    $scope.menus = {
+                        "button":[
+                            {
+                                "name":"",
+                                "type":"click",
+                                "key":"",
+                                "sub_button":[]
+                            }
+                        ]
+                    }
+                }else
+                {
+//                    $scope.menus = "<?php echo $field['data']?:'[]';?>";
+                    $scope.menus = <?php echo $field['data']?:'[]';?>;
+                }
+
+                //添加一级菜单
+                $scope.addTopMenu = function () {
+                    if ($scope.menus.button.length>=3){
+                        alert('只能创建3个按钮菜单');return false;
+                    }
+                    var menu = {
+                        "name":"",
+                        "type":"click",
+                        "key":"",
+                        "sub_button":[]
+                    }
+                    $scope.menus.button.push(menu);
+                }
+
+                //添加子菜单
+                $scope.addChildMenu = function (k) {
+                    if($scope.menus.button.length>=5){
+                        alert('最多只能创建5个');return false;
+                    }
+                    var menu = {
+                        name: '',
+                        type: 'view',
+                        key: '',
+                        url: ''
+                    }
+                    $scope.menus.button[k].sub_button.push(menu);
+                }
+
+                //提交数据 将页面上所有数据转为JSON格式存入隐藏域
+                $("form").submit(function () {
+                    $("[name='data']").val(angular.toJson($scope.menus));
+                })
+
+                //删除一级菜单
+                $scope.delTopMenu = function (one) {
+                    if($scope.menus.button.length==1){
+                        alert('至少留一个');return false;
+                    }
+                    $scope.menus.button = _.without($scope.menus.button,one);
+                }
+                
+                //删除子菜单
+                $scope.delChildMenu = function (key,one) {
+                    $scope.menus.button[key].sub_button = _.without($scope.menus.button[key].childMenu,one);
+                }
+
+            }]);
+            angular.bootstrap(document.getElementById('form'),['id']);
+        })
+    </script>
+
+</block>
